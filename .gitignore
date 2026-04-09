@@ -1,0 +1,14 @@
+**/node_modules/
+**/dist/
+**/build/
+**/target/
+.DS_Store
+Thumbs.db
+
+.env
+
+.idea/
+.vscode/
+
+backend/psql_db/
+.docker
