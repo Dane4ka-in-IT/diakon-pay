@@ -7,5 +7,5 @@ SELECT
 FROM Accounts a
 LEFT JOIN Transactions t ON t.account_id = a.uuid
 LEFT JOIN Categories c ON t.category_id = c.uuid
-GROUP BY a.user_id, c.name_category, t_month
+GROUP BY a.user_id, t_month, c.name_category
 ORDER BY a.user_id, t_month;
