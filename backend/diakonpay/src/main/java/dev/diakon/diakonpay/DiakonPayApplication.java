@@ -8,10 +8,10 @@ import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
-public class DiakonpayApplication {
+public class DiakonPayApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DiakonpayApplication.class, args);
+        SpringApplication.run(DiakonPayApplication.class, args);
     }
 
     @Bean
