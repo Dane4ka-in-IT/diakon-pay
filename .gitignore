@@ -34,8 +34,7 @@ Thumbs.db
 
 .idea/
 .vscode/
-
-backend/psql_db/
 .docker
 
 
+backend/psql_data/

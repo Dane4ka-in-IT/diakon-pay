@@ -12,8 +12,8 @@ services:
     ports:
       - "6667:5432"
     volumes:
-      - ./backend/psql_db:/var/lib/postgresql/data
-      - ./backend/init_db:/docker-entrypoint-initdb.d
+      - ./backend/psql_data:/var/lib/postgresql/data
+      - ./backend/sql:/docker-entrypoint-initdb.d
 
   backend:
     build:
