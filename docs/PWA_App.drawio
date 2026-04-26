@@ -1,9 +1,12 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36" pages="5">
   <diagram name="Контекст" id="N0G6VgjLImOK3PfzwQtj">
-    <mxGraphModel dx="2115" dy="718" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="none" math="0" shadow="0">
+    <mxGraphModel dx="2700" dy="1044" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="none" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="UjDqvjw758zkVoYsAHPo-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="610" width="1090" x="-590" y="160" as="geometry" />
+        </mxCell>
         <mxCell id="B1JP4iY0OKc3BLcYjcIc-6" edge="1" parent="1" source="B1JP4iY0OKc3BLcYjcIc-3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;fontSize=14;strokeColor=default;labelBackgroundColor=none;fontColor=default;" target="B1JP4iY0OKc3BLcYjcIc-4" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
@@ -52,10 +55,13 @@
     </mxGraphModel>
   </diagram>
   <diagram id="3gzn8ZFk2plkBXxu5ttL" name="Контейнеры">
-    <mxGraphModel dx="1717" dy="2126" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="5150" dy="5208" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="VGLEs9UQYIo9JK7BDOKp-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="1010" width="1380" x="130" y="-1230" as="geometry" />
+        </mxCell>
         <object placeholders="1" c4Name="Клиент приложения PWA" c4Type="Пользователь" c4Description="Управляет своими доходами и расходами" label="&lt;font&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font&gt;&lt;font&gt;%c4Description%&lt;/font&gt;&lt;/font&gt;&lt;/div&gt;" id="z_kabumN0dOKZLioCgYS-3">
           <mxCell parent="1" style="html=1;fontSize=14;dashed=0;whiteSpace=wrap;fillColor=#083F75;strokeColor=default;fontColor=#FFFFFF;shape=mxgraph.c4.person2;align=center;metaEdit=1;points=[[0.5,0,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0]];resizable=0;" vertex="1">
             <mxGeometry height="180" width="200" x="726" y="-1160" as="geometry" />

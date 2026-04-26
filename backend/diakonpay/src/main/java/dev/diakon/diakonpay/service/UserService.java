@@ -19,10 +19,14 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final SMTPService smtpService;
 
-
     public User getUserById(Integer userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFound("Пользователь не найден"));
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByUserEmail(email)
+                .orElseThrow(() -> new UserNotFound("Пользователь не найден."));
     }
 
     @Transactional
@@ -40,8 +44,7 @@ public class UserService {
     }
 
     public User loginUser(String email, String password) {
-        User user = userRepository.findByUserEmail(email)
-                .orElseThrow(() -> new UserNotFound("Юзер отсутствует в базе данных."));
+        User user = getUserByEmail(email);
 
         if (!passwordEncoder.matches(password, user.getUserPassword())) {
             throw new InvalidPassword("Невалидный логин или пароль");
@@ -68,16 +71,14 @@ public class UserService {
     }
 
     public int requestPasswordRecovery(String email) {
-        User user = userRepository.findByUserEmail(email)
-                .orElseThrow(() -> new UserNotFound("Пользователь не найден."));
+        User user = getUserByEmail(email);
 
         return smtpService.sendMessageAboutRecoveryPass(user.getName(), user.getUserEmail());
     }
 
     @Transactional
     public void updatePassword(String email, String newPassword) {
-        User user = userRepository.findByUserEmail(email)
-                .orElseThrow(() -> new UserNotFound("Пользователь не найден."));
+        User user = getUserByEmail(email);
 
         user.setUserPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);

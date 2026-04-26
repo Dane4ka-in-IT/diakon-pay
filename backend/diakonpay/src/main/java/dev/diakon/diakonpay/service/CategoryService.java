@@ -5,6 +5,7 @@ import dev.diakon.diakonpay.dto.category.CategoryResponseDto;
 import dev.diakon.diakonpay.entity.Category;
 import dev.diakon.diakonpay.entity.User;
 import dev.diakon.diakonpay.exception.AccessDeniedException;
+import dev.diakon.diakonpay.exception.CategoryNotFoundException;
 import dev.diakon.diakonpay.exception.SystemObjectModificationException;
 import dev.diakon.diakonpay.exception.UserNotFound;
 import dev.diakon.diakonpay.repository.CategoryRepository;
@@ -26,8 +27,7 @@ public class CategoryService {
 
     private Category getCategoryByCategoryId(UUID categoryId){
         return categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Категория не найдена"));
-
+                .orElseThrow(() -> new CategoryNotFoundException("Категория не найдена"));
     }
 
     public List<CategoryResponseDto> getUserCategories(Integer userId) {
@@ -45,7 +45,9 @@ public class CategoryService {
     public UUID createCategory(Integer userId, CategoryRequestDto request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFound("Пользователь не найден"));
-
+        if (!request.type().equals("INCOME") && !request.type().equals("EXPENSE")) {
+            throw new IllegalArgumentException("Тип категории должен быть INCOME или EXPENSE");
+        }
         Category category = new Category();
         category.setId(request.id() != null ? request.id() : UUID.randomUUID());
         category.setUser(user);
@@ -59,6 +61,9 @@ public class CategoryService {
 
     @Transactional
     public void updateCategory(Integer userId, UUID categoryId, CategoryRequestDto request) {
+        if (!request.type().equals("INCOME") && !request.type().equals("EXPENSE")) {
+            throw new IllegalArgumentException("Тип категории должен быть INCOME или EXPENSE");
+        }
         Category category = getCategoryByCategoryId(categoryId);
         validation(userId, category);
 
