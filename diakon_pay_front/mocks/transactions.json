@@ -1,0 +1,10 @@
+[
+  { "id": 1, "date": "2023-10-25", "amount": -500, "category": "Еда", "account": "Наличные", "description": "Обед" },
+  { "id": 2, "date": "2023-10-26", "amount": 50000, "category": "Зарплата", "account": "Карта Сбер", "description": "Аванс" },
+  { "id": 3, "date": "2023-10-26", "amount": -150, "category": "Транспорт", "account": "Карта Сбер", "description": "Метро" },
+  { "id": 4, "date": "2023-10-27", "amount": -2000, "category": "Развлечения", "account": "Карта Тинькофф", "description": "Кино" },
+  { "id": 5, "date": "2023-10-28", "amount": -300, "category": "Еда", "account": "Наличные", "description": "Кофе" },
+  { "id": 6, "date": "2023-10-29", "amount": -1200, "category": "Супермаркет", "account": "Карта Сбер", "description": "Продукты" },
+  { "id": 7, "date": "2023-10-30", "amount": -5000, "category": "ЖКХ", "account": "Карта Сбер", "description": "Квартплата" },
+  { "id": 8, "date": "2023-10-31", "amount": 15000, "category": "Переводы", "account": "Карта Тинькофф", "description": "Долг вернули" }
+]

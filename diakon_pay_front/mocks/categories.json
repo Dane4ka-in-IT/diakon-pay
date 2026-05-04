@@ -1,0 +1,9 @@
+[
+  { "id": 1, "name": "Еда", "type": "expense" },
+  { "id": 2, "name": "Транспорт", "type": "expense" },
+  { "id": 3, "name": "Зарплата", "type": "income" },
+  { "id": 4, "name": "Развлечения", "type": "expense" },
+  { "id": 5, "name": "Супермаркет", "type": "expense" },
+  { "id": 6, "name": "ЖКХ", "type": "expense" },
+  { "id": 7, "name": "Переводы", "type": "income" }
+]

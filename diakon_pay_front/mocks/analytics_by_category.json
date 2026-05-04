@@ -1,0 +1,9 @@
+[
+  { "category": "Зарплата", "amount": 50000, "type": "income" },
+  { "category": "Переводы", "amount": 15000, "type": "income" },
+  { "category": "ЖКХ", "amount": 5000, "type": "expense" },
+  { "category": "Развлечения", "amount": 2000, "type": "expense" },
+  { "category": "Супермаркет", "amount": 1200, "type": "expense" },
+  { "category": "Еда", "amount": 800, "type": "expense" },
+  { "category": "Транспорт", "amount": 150, "type": "expense" }
+]

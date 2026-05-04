@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>DiakonPay — Транзакции</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+  
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(90deg, #F8F8F8 0%, #EAEAEA 30%, #E5F0FF 52%, #49A9FD 87%, #2A9BFD 100%);
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: linear-gradient(90deg, #0E40C7 0%, #0E45D5 22%, #0C76F7 38%, #0C8DFD 51%, #0C76F7 66%, #0C76F7 79%, #0E4AE3 100%);
+    padding: 14px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .logo {
+    color: #cfe0ff;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  .logo span { color: #ffffff; }
+  .header-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  .theme-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    color: #cfe0ff;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  main {
+    flex: 1;
+    padding: 40px 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .container {
+    background: rgba(255,255,255,0.92);
+    border-radius: 14px;
+    padding: 36px 40px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    width: 100%;
+    max-width: 1000px;
+  }
+  
+  .container-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+  
+  .container h2 {
+    color: #1a4fa8;
+    font-size: 24px;
+  }
+  
+  .add-btn {
+    padding: 10px 20px;
+    background: linear-gradient(90deg, #2a6fd8, #1a4fa8);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .add-btn:hover { opacity: 0.92; }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  th, td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e0e6f0;
+    color: #0E40C7;
+    font-size: 15px;
+  }
+  
+  th {
+    font-weight: 600;
+    color: #1a4fa8;
+    background: #f5f8ff;
+  }
+  
+  tr:hover {
+    background: #f9fbff;
+  }
+  
+  .amount.positive { color: #28a745; font-weight: 600; }
+  .amount.negative { color: #dc3545; font-weight: 600; }
+  
+  .actions-btn {
+    background: none;
+    border: none;
+    color: #1a4fa8;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    margin-right: 8px;
+  }
+  .actions-btn:hover { text-decoration: underline; }
+  .actions-btn.delete { color: #dc3545; }
+  
+  footer {
+    background: linear-gradient(90deg, #0E40C7 0%, #0E45D5 22%, #0C76F7 38%, #0C8DFD 51%, #0C76F7 66%, #0C76F7 79%, #0E4AE3 100%);
+    color: #ffffff;
+    text-align: center;
+    padding: 0;
+    font-size: 13px;
+  }
+  
+  .footer-top {
+    background: linear-gradient(90deg, #2A5FA8 0%, #2A6AB8 22%, #1E8FE5 38%, #1EA0EB 51%, #1E8FE5 66%, #1E8FE5 79%, #2A6FD0 100%);
+    padding: 10px 7px;
+  }
+  
+  .footer-bottom {
+    background: rgba(34, 34, 34, 0.7);
+    padding: 7px;
+  }
+  
+  .footer-nav {
+    display: flex;
+    justify-content: center;
+    gap: 200px;
+  }
+  
+  .footer-nav-btn {
+    background: #85C6FE;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 8px;
+    padding: 6px 20px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    transition: all 0.3s;
+    display: inline-block;
+  }
+  
+  .footer-nav-btn:hover {
+    background: #6bb5f5;
+    border-color: rgba(255, 255, 255, 0.8);
+    transform: translateY(-2px);
+  }
+  
+  /* Modal */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  .modal.active {
+    display: flex;
+  }
+  .modal-content {
+    background: rgba(255,255,255,0.95);
+    border-radius: 14px;
+    padding: 36px 40px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 420px;
+  }
+  .modal-content h3 {
+    color: #1a4fa8;
+    margin-bottom: 24px;
+    font-size: 22px;
+    text-align: center;
+  }
+  .field {
+    margin-bottom: 14px;
+  }
+  .field label {
+    display: block;
+    margin-bottom: 6px;
+    color: #0E40C7;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .field input, .field select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #b9c8e0;
+    border-radius: 8px;
+    font-size: 14px;
+    background: #f5f8ff;
+    outline: none;
+    transition: border 0.2s;
+  }
+  .field input:focus, .field select:focus { border-color: #2a6fd8; }
+  
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  
+  .modal-btn {
+    flex: 1;
+    padding: 12px;
+    background: linear-gradient(90deg, #2a6fd8, #1a4fa8);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .modal-btn:hover { opacity: 0.92; }
+  .modal-btn.cancel {
+    background: #e0e6f0;
+    color: #1a4fa8;
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="logo">Diakon<span>Pay</span></div>
+    <div class="header-actions">
+      <button class="theme-btn" title="Переключить тему">☾</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="container-header">
+        <h2>История транзакций</h2>
+        <button class="add-btn" onclick="openModal()">+ Добавить</button>
+      </div>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Дата</th>
+            <th>Категория</th>
+            <th>Счет</th>
+            <th>Описание</th>
+            <th>Сумма</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody id="transactions-body">
+          <!-- Data will be loaded here -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-top">
+      <div class="footer-nav">
+        <a href="#" class="footer-nav-btn">Все операции</a>
+        <a href="#" class="footer-nav-btn">Главная</a>
+        <a href="#" class="footer-nav-btn">Аналитика</a>
+      </div>
+    </div>
+    <div class="footer-bottom">© IT_diakon 2026</div>
+  </footer>
+
+  <div class="modal" id="transactionModal">
+    <div class="modal-content">
+      <h3 id="modalTitle">Новая транзакция</h3>
+      <form id="transactionForm" onsubmit="saveTransaction(event)">
+        <input type="hidden" id="txId">
+        <div class="field">
+          <label>Дата</label>
+          <input type="date" id="txDate" required>
+        </div>
+        <div class="field">
+          <label>Тип</label>
+          <select id="txType" onchange="updateCategories()" required>
+            <option value="expense">Расход</option>
+            <option value="income">Доход</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Категория</label>
+          <select id="txCategory" required>
+            <!-- Loaded dynamically -->
+          </select>
+        </div>
+        <div class="field">
+          <label>Счет</label>
+          <select id="txAccount" required>
+            <!-- Loaded dynamically -->
+          </select>
+        </div>
+        <div class="field">
+          <label>Сумма</label>
+          <input type="number" id="txAmount" step="0.01" required>
+        </div>
+        <div class="field">
+          <label>Описание</label>
+          <input type="text" id="txDescription">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn cancel" onclick="closeModal()">Отмена</button>
+          <button type="submit" class="modal-btn">Сохранить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let transactions = [];
+    let categories = [];
+    let accounts = [];
+
+    async function loadData() {
+      try {
+        // Fetch mocks
+        const [txRes, catRes, accRes] = await Promise.all([
+          fetch('mocks/transactions.json'),
+          fetch('mocks/categories.json'),
+          fetch('mocks/accounts.json')
+        ]);
+        
+        transactions = await txRes.json();
+        categories = await catRes.json();
+        accounts = await accRes.json();
+        
+        renderTransactions();
+        populateSelects();
+      } catch (e) {
+        console.error('Error loading mock data:', e);
+      }
+    }
+
+    function renderTransactions() {
+      const tbody = document.getElementById('transactions-body');
+      tbody.innerHTML = '';
+      
+      transactions.forEach(tx => {
+        const tr = document.createElement('tr');
+        const amountClass = tx.amount > 0 ? 'positive' : 'negative';
+        const amountSign = tx.amount > 0 ? '+' : '';
+        
+        tr.innerHTML = `
+          <td>${tx.date}</td>
+          <td>${tx.category}</td>
+          <td>${tx.account}</td>
+          <td>${tx.description || ''}</td>
+          <td class="amount ${amountClass}">${amountSign}${tx.amount} ₽</td>
+          <td>
+            <button class="actions-btn" onclick="editTransaction(${tx.id})">Ред.</button>
+            <button class="actions-btn delete" onclick="deleteTransaction(${tx.id})">Удалить</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function populateSelects() {
+      const accSelect = document.getElementById('txAccount');
+      accSelect.innerHTML = accounts.map(a => `<option value="${a.name}">${a.name}</option>`).join('');
+      updateCategories();
+    }
+
+    function updateCategories() {
+      const type = document.getElementById('txType').value;
+      const catSelect = document.getElementById('txCategory');
+      const filteredCats = categories.filter(c => c.type === type);
+      catSelect.innerHTML = filteredCats.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+    }
+
+    function openModal(tx = null) {
+      const modal = document.getElementById('transactionModal');
+      const form = document.getElementById('transactionForm');
+      const title = document.getElementById('modalTitle');
+      
+      form.reset();
+      
+      if (tx) {
+        title.textContent = 'Редактировать транзакцию';
+        document.getElementById('txId').value = tx.id;
+        document.getElementById('txDate').value = tx.date;
+        document.getElementById('txType').value = tx.amount > 0 ? 'income' : 'expense';
+        updateCategories();
+        document.getElementById('txCategory').value = tx.category;
+        document.getElementById('txAccount').value = tx.account;
+        document.getElementById('txAmount').value = Math.abs(tx.amount);
+        document.getElementById('txDescription').value = tx.description;
+      } else {
+        title.textContent = 'Новая транзакция';
+        document.getElementById('txId').value = '';
+        document.getElementById('txDate').value = new Date().toISOString().split('T')[0];
+        updateCategories();
+      }
+      
+      modal.classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('transactionModal').classList.remove('active');
+    }
+
+    function editTransaction(id) {
+      const tx = transactions.find(t => t.id === id);
+      if (tx) openModal(tx);
+    }
+
+    function deleteTransaction(id) {
+      if (confirm('Удалить транзакцию?')) {
+        transactions = transactions.filter(t => t.id !== id);
+        renderTransactions();
+        console.log(`DELETE /api/transactions/${id}`);
+      }
+    }
+
+    function saveTransaction(e) {
+      e.preventDefault();
+      
+      const id = document.getElementById('txId').value;
+      const date = document.getElementById('txDate').value;
+      const type = document.getElementById('txType').value;
+      const category = document.getElementById('txCategory').value;
+      const account = document.getElementById('txAccount').value;
+      let amount = parseFloat(document.getElementById('txAmount').value);
+      const description = document.getElementById('txDescription').value;
+      
+      if (type === 'expense') amount = -Math.abs(amount);
+      else amount = Math.abs(amount);
+      
+      if (id) {
+        // Edit
+        const txIndex = transactions.findIndex(t => t.id == id);
+        if (txIndex > -1) {
+          transactions[txIndex] = { id: parseInt(id), date, category, account, amount, description };
+        }
+        console.log(`PUT /api/transactions/${id}`, transactions[txIndex]);
+      } else {
+        // Add
+        const newId = transactions.length ? Math.max(...transactions.map(t => t.id)) + 1 : 1;
+        const newTx = { id: newId, date, category, account, amount, description };
+        transactions.unshift(newTx);
+        console.log(`POST /api/transactions`, newTx);
+      }
+      
+      renderTransactions();
+      closeModal();
+    }
+
+    // Initialize
+    loadData();
+  </script>
+</body>
+</html>
