@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>DiakonPay — Главная</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+  
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(90deg, #F8F8F8 0%, #EAEAEA 30%, #E5F0FF 52%, #49A9FD 87%, #2A9BFD 100%);
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: linear-gradient(90deg, #0E40C7 0%, #0E45D5 22%, #0C76F7 38%, #0C8DFD 51%, #0C76F7 66%, #0C76F7 79%, #0E4AE3 100%);
+    padding: 14px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    color: #cfe0ff;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  .logo span { color: #ffffff; }
+  .header-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  .theme-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    color: #cfe0ff;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .user-name {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .user-icon {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    color: #cfe0ff;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  main {
+    flex: 1;
+    padding: 40px 60px;
+    display: grid;
+    grid-template-columns: 280px 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 30px;
+    align-items: start;
+  }
+  
+  /* Расходы и доходы - первая колонка, первая строка */
+  .balance-cards-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    grid-column: 1;
+    grid-row: 1;
+  }
+  
+  /* Общий баланс - вторая колонка, первая строка */
+  .total-balance-card {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  
+  /* Последние операции - третья колонка, обе строки */
+  .recent-operations-card {
+    grid-column: 3;
+    grid-row: 1 / 3;
+  }
+  
+  /* Мои счета - первая и вторая колонки, вторая строка */
+  .accounts-section {
+    grid-column: 1 / 3;
+    grid-row: 2;
+  }
+  
+  .balance-card {
+    background: rgba(255,255,255,0.92);
+    border-radius: 14px;
+    padding: 14px 18px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  }
+  
+  .balance-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .balance-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  
+  .balance-icon.expense {
+    background: #ffe5e5;
+    color: #dc3545;
+  }
+  
+  .balance-icon.income {
+    background: #e5ffe5;
+    color: #28a745;
+  }
+  
+  .balance-info {
+    flex: 1;
+  }
+  
+  .balance-label {
+    color: #0E40C7;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  
+  .balance-amount {
+    font-size: 16px;
+    font-weight: 700;
+  }
+  
+  .balance-amount.expense {
+    color: #dc3545;
+  }
+  
+  .balance-amount.income {
+    color: #28a745;
+  }
+  
+  .accounts-section {
+    background: rgba(255,255,255,0.92);
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  }
+  
+  .accounts-header {
+    background: #0C76F7;
+    color: #ffffff;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 20px;
+    cursor: pointer;
+  }
+  
+  .account-item {
+    background: #f5f8ff;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .account-item:hover {
+    background: #e8f0ff;
+    transform: translateX(4px);
+  }
+  
+  .account-name {
+    color: #0E40C7;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  
+  .account-arrow {
+    color: #0C76F7;
+    font-size: 20px;
+  }
+  
+  .account-cards {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  
+  .card-mini {
+    background: #0C76F7;
+    color: #ffffff;
+    border-radius: 8px;
+    padding: 16px 12px;
+    flex: 1;
+    text-align: center;
+  }
+  
+  .card-amount {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  
+  .card-number {
+    font-size: 10px;
+    opacity: 0.8;
+  }
+  
+  .total-balance-card {
+    background: rgba(255,255,255,0.92);
+    border-radius: 14px;
+    padding: 20px 24px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+  
+  .wallet-icon {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 10px;
+    background: #0C76F7;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: #ffffff;
+  }
+  
+  .total-label {
+    color: #0E40C7;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  
+  .total-amount {
+    color: #0C76F7;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  
+  .new-transaction-btn {
+    background: #0C76F7;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 0 auto;
+    width: fit-content;
+  }
+  
+  .new-transaction-btn:hover {
+    background: #0a65d9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(12, 118, 247, 0.3);
+  }
+  
+  .recent-operations-card {
+    background: rgba(255,255,255,0.92);
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  }
+  
+  .operations-header {
+    color: #0E40C7;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .operation-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e8f0ff;
+  }
+  
+  .operation-item:last-child {
+    border-bottom: none;
+  }
+  
+  .operation-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #0C76F7;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  
+  .operation-info {
+    flex: 1;
+  }
+  
+  .operation-name {
+    color: #0E40C7;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  
+  .operation-category {
+    color: #6b8ab8;
+    font-size: 12px;
+  }
+  
+  .operation-amount {
+    font-size: 15px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  
+  .operation-amount.positive {
+    color: #28a745;
+  }
+  
+  .operation-amount.negative {
+    color: #dc3545;
+  }
+  
+  .view-all-btn {
+    background: #0C76F7;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 16px auto 0;
+    transition: all 0.2s;
+    display: block;
+  }
+  
+  .view-all-btn:hover {
+    background: #0a65d9;
+    transform: translateY(-2px);
+  }
+  
+  footer {
+    background: linear-gradient(90deg, #0E40C7 0%, #0E45D5 22%, #0C76F7 38%, #0C8DFD 51%, #0C76F7 66%, #0C76F7 79%, #0E4AE3 100%);
+    color: #ffffff;
+    text-align: center;
+    padding: 0;
+    font-size: 13px;
+    margin-top: auto;
+  }
+  
+  .footer-top {
+    background: linear-gradient(90deg, #2A5FA8 0%, #2A6AB8 22%, #1E8FE5 38%, #1EA0EB 51%, #1E8FE5 66%, #1E8FE5 79%, #2A6FD0 100%);
+    padding: 10px 7px;
+  }
+  
+  .footer-bottom {
+    background: rgba(34, 34, 34, 0.7);
+    padding: 7px;
+  }
+  
+  .footer-nav {
+    display: flex;
+    justify-content: center;
+    gap: 200px;
+  }
+  
+  .footer-nav-btn {
+    background: #85C6FE;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 8px;
+    padding: 6px 20px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    transition: all 0.3s;
+    display: inline-block;
+  }
+  
+  .footer-nav-btn:hover {
+    background: #6bb5f5;
+    border-color: rgba(255, 255, 255, 0.8);
+    transform: translateY(-2px);
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="logo">Diakon<span>Pay</span></div>
+    <div class="header-actions">
+      <button class="theme-btn" title="Переключить тему">☾</button>
+      <div class="user-name" id="userName">Иванов И.И.</div>
+      <div class="user-icon">👤</div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Расходы и доходы -->
+    <div class="balance-cards-column">
+      <div class="balance-card">
+        <div class="balance-item">
+          <div class="balance-icon expense">↗</div>
+          <div class="balance-info">
+            <div class="balance-label">Расходы</div>
+            <div class="balance-amount expense" id="totalExpenses">- 2 150 430,55 ₽</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="balance-card">
+        <div class="balance-item">
+          <div class="balance-icon income">↙</div>
+          <div class="balance-info">
+            <div class="balance-label">Доходы</div>
+            <div class="balance-amount income" id="totalIncome">+ 2 150 430,55 ₽</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Общий баланс -->
+    <div class="total-balance-card">
+      <div class="wallet-icon">💳</div>
+      <div class="total-label">Общий баланс</div>
+      <div class="total-amount" id="totalBalance">120 000 ₽</div>
+      <button class="new-transaction-btn" onclick="location.href='transactions.html'">
+        <span>+</span>
+        <span>Новая транзакция</span>
+      </button>
+    </div>
+    
+    <!-- Последние операции -->
+    <div class="recent-operations-card">
+        <div class="operations-header">Последние операции</div>
+        
+        <div id="operationsList">
+          <div class="operation-item">
+            <div class="operation-icon">🛒</div>
+            <div class="operation-info">
+              <div class="operation-name">Магнит</div>
+              <div class="operation-category">Оплата в магазине</div>
+            </div>
+            <div class="operation-amount negative">-300 ₽</div>
+          </div>
+          
+          <div class="operation-item">
+            <div class="operation-icon">🚌</div>
+            <div class="operation-info">
+              <div class="operation-name">Московский транспорт</div>
+              <div class="operation-category">Транспорт</div>
+            </div>
+            <div class="operation-amount negative">-1000 ₽</div>
+          </div>
+          
+          <div class="operation-item">
+            <div class="operation-icon">🛍️</div>
+            <div class="operation-info">
+              <div class="operation-name">Wildberries</div>
+              <div class="operation-category">Маркетплейсы</div>
+            </div>
+            <div class="operation-amount negative">-1550 ₽</div>
+          </div>
+          
+          <div class="operation-item">
+            <div class="operation-icon">🍴</div>
+            <div class="operation-info">
+              <div class="operation-name">Cofix</div>
+              <div class="operation-category">Еда и рестораны</div>
+            </div>
+            <div class="operation-amount negative">-350 ₽</div>
+          </div>
+          
+          <div class="operation-item">
+            <div class="operation-icon">💳</div>
+            <div class="operation-info">
+              <div class="operation-name">Перевод по карте</div>
+              <div class="operation-category">Переводы</div>
+            </div>
+            <div class="operation-amount negative">-6666 ₽</div>
+          </div>
+          
+          <div class="operation-item">
+            <div class="operation-icon">🎮</div>
+            <div class="operation-info">
+              <div class="operation-name">Донат в Tower of Fantasy</div>
+              <div class="operation-category">Развлечения</div>
+            </div>
+            <div class="operation-amount negative">-20000 ₽</div>
+          </div>
+          
+          <div class="operation-item">
+            <div class="operation-icon">⚡</div>
+            <div class="operation-info">
+              <div class="operation-name">Оплата электроэнергии</div>
+              <div class="operation-category">ЖКХ и связь</div>
+            </div>
+            <div class="operation-amount positive">+5000 ₽</div>
+          </div>
+          
+          <div class="operation-item">
+            <div class="operation-icon">💰</div>
+            <div class="operation-info">
+              <div class="operation-name">Работа в приёмной комиссии</div>
+              <div class="operation-category">Зарплата</div>
+            </div>
+            <div class="operation-amount positive">+45000 ₽</div>
+          </div>
+        </div>
+      
+      <button class="view-all-btn" onclick="location.href='transactions.html'">Посмотреть все операции</button>
+    </div>
+    
+    <!-- Мои счета -->
+    <div class="accounts-section">
+      <div class="accounts-header">Мои счета</div>
+      
+      <div class="account-item" onclick="toggleAccount('sber')">
+        <div class="account-name">Счета Сбербанка</div>
+        <div class="account-arrow">⟩</div>
+      </div>
+      
+      <div class="account-item" onclick="toggleAccount('vtb')">
+        <div class="account-name">Счета ВТБ</div>
+        <div class="account-arrow">⌄</div>
+      </div>
+      <div class="account-cards" id="vtbCards">
+        <div class="card-mini">
+          <div class="card-amount">10625,65 ₽</div>
+          <div class="card-number">**** 2537</div>
+        </div>
+        <div class="card-mini">
+          <div class="card-amount">90625,65 ₽</div>
+          <div class="card-number">**** 2537</div>
+        </div>
+        <div class="card-mini">
+          <div class="card-amount">109625,65 ₽</div>
+          <div class="card-number">**** 2537</div>
+        </div>
+      </div>
+      
+      <div class="account-item" onclick="toggleAccount('tbank')">
+        <div class="account-name">Счета Т-банка</div>
+        <div class="account-arrow">⟩</div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-top">
+      <div class="footer-nav">
+        <a href="transactions.html" class="footer-nav-btn">Все операции</a>
+        <a href="index.html" class="footer-nav-btn">Главная</a>
+        <a href="#" class="footer-nav-btn">Аналитика</a>
+      </div>
+    </div>
+    <div class="footer-bottom">© IT_diakon 2026</div>
+  </footer>
+
+  <script>
+    async function loadData() {
+      try {
+        // Загрузка данных пользователя
+        const userRes = await fetch('mocks/user.json');
+        const user = await userRes.json();
+        document.getElementById('userName').textContent = user.name;
+        
+        // Загрузка общего баланса
+        const balanceRes = await fetch('mocks/analytics_total_balance.json');
+        const balanceData = await balanceRes.json();
+        document.getElementById('totalBalance').textContent = formatAmount(balanceData.total_balance);
+        
+        // Загрузка итогов
+        const totalsRes = await fetch('mocks/analytics_totals.json');
+        const totals = await totalsRes.json();
+        document.getElementById('totalExpenses').textContent = '- ' + formatAmount(Math.abs(totals.total_expenses));
+        document.getElementById('totalIncome').textContent = '+ ' + formatAmount(totals.total_income);
+        
+        // Загрузка последних транзакций
+        const txRes = await fetch('mocks/transactions.json');
+        const transactions = await txRes.json();
+        renderRecentOperations(transactions.slice(0, 8));
+      } catch (e) {
+        console.error('Error loading data:', e);
+      }
+    }
+    
+    function formatAmount(amount) {
+      return new Intl.NumberFormat('ru-RU', {
+        style: 'currency',
+        currency: 'RUB',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      }).format(amount);
+    }
+    
+    function renderRecentOperations(transactions) {
+      const list = document.getElementById('operationsList');
+      list.innerHTML = '';
+      
+      const icons = {
+        'Магазины': '🛒',
+        'Транспорт': '🚌',
+        'Маркетплейсы': '🛍️',
+        'Еда и рестораны': '🍴',
+        'Переводы': '💳',
+        'Развлечения': '🎮',
+        'ЖКХ и связь': '⚡',
+        'Зарплата': '💰'
+      };
+      
+      transactions.forEach(tx => {
+        const item = document.createElement('div');
+        item.className = 'operation-item';
+        
+        const icon = icons[tx.category] || '💰';
+        const amountClass = tx.amount > 0 ? 'positive' : 'negative';
+        const amountSign = tx.amount > 0 ? '+' : '';
+        
+        item.innerHTML = `
+          <div class="operation-icon">${icon}</div>
+          <div class="operation-info">
+            <div class="operation-name">${tx.description || tx.category}</div>
+            <div class="operation-category">${tx.category}</div>
+          </div>
+          <div class="operation-amount ${amountClass}">${amountSign}${Math.abs(tx.amount)} ₽</div>
+        `;
+        
+        list.appendChild(item);
+      });
+    }
+    
+    function toggleAccount(bank) {
+      console.log('Toggle account:', bank);
+      // Здесь можно добавить логику раскрытия/скрытия счетов
+    }
+    
+    // Инициализация
+    loadData();
+  </script>
+</body>
+</html>
