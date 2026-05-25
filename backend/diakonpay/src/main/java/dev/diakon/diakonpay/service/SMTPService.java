@@ -1,12 +1,19 @@
 package dev.diakon.diakonpay.service;
 
+import dev.diakon.diakonpay.repository.TarantoolTokenRepository;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
+import java.time.Instant;
+import java.util.Map;
 import java.util.Random;
 
 @Service
@@ -14,90 +21,68 @@ import java.util.Random;
 public class SMTPService {
 
     private final JavaMailSender mailSender;
+    private final TemplateEngine templateEngine;
+    private final TarantoolTokenRepository tokenRepository;
 
     @Value("${spring.mail.username}")
     private String fromEmail;
+
     @Value("${diakonpay.mail.reply}")
     private String replyTo;
 
-    @Async
-    public void sendMail(String to, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(fromEmail);
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setReplyTo(replyTo);
-        message.setText(text);
+    private static final long OTP_TTL_SECONDS = 600;
 
-        mailSender.send(message);
+    @Async
+    protected void sendMail(String to, String subject, String templateName, Map<String, Object> variables) {
+        Context context = new Context();
+        context.setVariables(variables);
+        String htmlContent = templateEngine.process(templateName, context);
+
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            helper.setFrom(fromEmail);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setReplyTo(replyTo);
+            helper.setText(htmlContent, true);
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            System.err.println("Не удалось отправить письмо на адрес " + to + ": " + e.getMessage());
+        }
     }
 
     public void sendMessageAboutRegistry(String userName, String email) {
-        String subject = "Добро пожаловать в DiakonPay!";
-        String text = String.format("""
-                Здравствуйте, %s!
-
-                Мы рады приветствовать вас в приложении DiakonPay.
-                Ваш аккаунт успешно зарегистрирован и готов к работе.
-
-                Следите за обновлениями на нашем GitHub:
-                https://github.com/Dane4ka-in-IT/diakon-pay
-
-                \t\t\t\t\t\t\tC уважением, команда diakon-team!""",
-                userName);
-
-        sendMail(email, subject, text);
+        sendMail(email, "Добро пожаловать в DiakonPay!", "welcome",
+                Map.of("userName", userName));
     }
 
     public int sendMessageAboutChangedEmail(String userName, String oldEmail, String newEmail) {
-        int randomNumber = new Random().nextInt(9000) + 1000;
-        String subject = "Cмена почты в DiakonPay!";
-        String text = String.format("""
-                Здравствуйте, %s!
-
-                Вы подали запрос на смену почты. Если это были не вы - срочно смените пароль.
-                Ожидаемая новая почта: %s.
-                Для подтверждения введите код: %d.
-
-                \t\t\t\t\t\t\tC уважением, команда diakon-team!""",
-                userName, newEmail, randomNumber);
-
-        sendMail(oldEmail, subject, text);
-        return randomNumber;
+        int code = new Random().nextInt(9000) + 1000;
+        long expiresAt = Instant.now().getEpochSecond() + OTP_TTL_SECONDS;
+        tokenRepository.saveOtp(newEmail, code, "email_change", expiresAt);
+        sendMail(oldEmail, "Подтверждение смены Email — DiakonPay", "email-change",
+                Map.of("userName", userName, "newEmail", newEmail, "code", code));
+        return code;
     }
 
     public int sendMessageAboutRecoveryPass(String userName, String email) {
-        int randomNumber = new Random().nextInt(9000) + 1000;
-        String subject = "Смена пароля в DiakonPay!";
-        String text = String.format("""
-                Здравствуйте, %s!
-
-                Вы подали запрос на смену пароля. Если это были не вы - проигнорируйте это сообщение.
-                Ваш временный код: %d.
-
-                \t\t\t\t\t\t\tC уважением, команда diakon-team!""",
-                userName, randomNumber);
-
-        sendMail(email, subject, text);
-        return randomNumber;
+        int code = new Random().nextInt(9000) + 1000;
+        long expiresAt = Instant.now().getEpochSecond() + OTP_TTL_SECONDS;
+        tokenRepository.saveOtp(email, code, "password_recovery", expiresAt);
+        sendMail(email, "Восстановление пароля — DiakonPay", "password-recovery",
+                Map.of("userName", userName, "code", code));
+        return code;
     }
 
     public void sendMonthlyReport(String userName, String email, String month,
                                   double totalSpent, int transactionsCount) {
-        String subject = "Ваш отчет в DiakonPay за " + month;
-        String text = String.format("""
-                Здравствуйте, %s!
-                
-                Ваш краткий отчет за %s готов:
-                - Всего потрачено: %.2f руб.
-                - Количество операций: %d
-                
-                Полную детализацию вы можете увидеть в приложении.
-                
-                \t\t\t\t\t\t\tС уважением, команда diakon-team!""",
-                userName, month, totalSpent, transactionsCount
-        );
-
-        sendMail(email, subject, text);
+        sendMail(email, "Ваш отчёт за " + month + " — DiakonPay", "monthly-report",
+                Map.of(
+                        "userName", userName,
+                        "month", month,
+                        "totalSpent", totalSpent,
+                        "transactionsCount", transactionsCount
+                ));
     }
 }
