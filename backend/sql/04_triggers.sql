@@ -91,36 +91,58 @@ $$;
 
 CREATE TRIGGER trg_update_balance AFTER INSERT OR UPDATE OR DELETE ON Transactions FOR EACH ROW EXECUTE FUNCTION update_balance_fn();
 
-
-CREATE OR REPLACE FUNCTION audit_log_fn()
+CREATE OR REPLACE FUNCTION audit_users_fn()
 RETURNS trigger
 LANGUAGE plpgsql
 AS $$
 DECLARE
     v_entity_id INT := NULL;
-    v_entity_uuid UUID := NULL;
 BEGIN
-    IF (TG_TABLE_NAME = 'Users') THEN
-        v_entity_id := (CASE WHEN TG_OP = 'DELETE' THEN OLD.id ELSE NEW.id END);
-    ELSE
-        v_entity_uuid := (CASE WHEN TG_OP = 'DELETE' THEN OLD.uuid ELSE NEW.uuid END);
-    END IF;
+    v_entity_id := (CASE WHEN TG_OP = 'DELETE' THEN OLD.id ELSE NEW.id END);
 
     INSERT INTO AuditLogs(entity, entity_id, entity_uuid, action)
-    VALUES (TG_TABLE_NAME, v_entity_id, v_entity_uuid, TG_OP);
+    VALUES (TG_TABLE_NAME, v_entity_id, NULL, TG_OP);
 
     IF (TG_OP = 'DELETE') THEN
         RETURN OLD;
     END IF;
     RETURN NEW;
-
 EXCEPTION
     WHEN others THEN
-        RAISE EXCEPTION 'audit_log_fn failed: %, SQLSTATE: %', SQLERRM, SQLSTATE;
+        RAISE EXCEPTION 'audit_users_fn failed: %, SQLSTATE: %', SQLERRM, SQLSTATE;
 END;
 $$;
 
-CREATE TRIGGER trg_audit_users AFTER INSERT OR UPDATE OR DELETE ON Users FOR EACH ROW EXECUTE FUNCTION audit_log_fn();
-CREATE TRIGGER trg_audit_accounts AFTER INSERT OR UPDATE OR DELETE ON Accounts FOR EACH ROW EXECUTE FUNCTION audit_log_fn();
-CREATE TRIGGER trg_audit_categories AFTER INSERT OR UPDATE OR DELETE ON Categories FOR EACH ROW EXECUTE FUNCTION audit_log_fn();
-CREATE TRIGGER trg_audit_transactions AFTER INSERT OR UPDATE OR DELETE ON Transactions FOR EACH ROW EXECUTE FUNCTION audit_log_fn();
+CREATE OR REPLACE FUNCTION audit_entities_fn()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_entity_uuid UUID := NULL;
+BEGIN
+    v_entity_uuid := (CASE WHEN TG_OP = 'DELETE' THEN OLD.uuid ELSE NEW.uuid END);
+
+    INSERT INTO AuditLogs(entity, entity_id, entity_uuid, action)
+    VALUES (TG_TABLE_NAME, NULL, v_entity_uuid, TG_OP);
+
+    IF (TG_OP = 'DELETE') THEN
+        RETURN OLD;
+    END IF;
+    RETURN NEW;
+EXCEPTION
+    WHEN others THEN
+        RAISE EXCEPTION 'audit_entities_fn failed: %, SQLSTATE: %', SQLERRM, SQLSTATE;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_audit_users ON Users;
+CREATE TRIGGER trg_audit_users AFTER INSERT OR UPDATE OR DELETE ON Users FOR EACH ROW EXECUTE FUNCTION audit_users_fn();
+
+DROP TRIGGER IF EXISTS trg_audit_accounts ON Accounts;
+CREATE TRIGGER trg_audit_accounts AFTER INSERT OR UPDATE OR DELETE ON Accounts FOR EACH ROW EXECUTE FUNCTION audit_entities_fn();
+
+DROP TRIGGER IF EXISTS trg_audit_categories ON Categories;
+CREATE TRIGGER trg_audit_categories AFTER INSERT OR UPDATE OR DELETE ON Categories FOR EACH ROW EXECUTE FUNCTION audit_entities_fn();
+
+DROP TRIGGER IF EXISTS trg_audit_transactions ON Transactions;
+CREATE TRIGGER trg_audit_transactions AFTER INSERT OR UPDATE OR DELETE ON Transactions FOR EACH ROW EXECUTE FUNCTION audit_entities_fn();

@@ -4,11 +4,12 @@ import dev.diakon.diakonpay.entity.User;
 import dev.diakon.diakonpay.exception.DuplicateEmailException;
 import dev.diakon.diakonpay.exception.InvalidPassword;
 import dev.diakon.diakonpay.exception.UserNotFound;
+import dev.diakon.diakonpay.repository.TarantoolTokenRepository;
 import dev.diakon.diakonpay.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -16,8 +17,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final SMTPService smtpService;
+    private final TarantoolTokenRepository tokenRepository;
 
     public User getUserById(Integer userId) {
         return userRepository.findById(userId)
@@ -63,8 +65,15 @@ public class UserService {
     }
 
     @Transactional
-    public void updateEmail(Integer userId, String newEmail) {
+    public void updateEmail(Integer userId, String newEmail, int code) {
         User user = getUserById(userId);
+
+        boolean isOtpValid = tokenRepository.verifyOtp(newEmail, code, "email_change");
+        if (!isOtpValid) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "Неверный или просроченный код подтверждения"
+            );
+        }
 
         user.setUserEmail(newEmail);
         userRepository.save(user);
@@ -77,8 +86,15 @@ public class UserService {
     }
 
     @Transactional
-    public void updatePassword(String email, String newPassword) {
+    public void updatePassword(String email, String newPassword, int code) {
         User user = getUserByEmail(email);
+
+        boolean isOtpValid = tokenRepository.verifyOtp(email, code, "password_recovery");
+        if (!isOtpValid) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "Неверный или просроченный код подтверждения"
+            );
+        }
 
         user.setUserPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);

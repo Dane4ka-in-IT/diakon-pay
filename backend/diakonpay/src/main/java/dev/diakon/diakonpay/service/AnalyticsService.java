@@ -3,6 +3,7 @@ package dev.diakon.diakonpay.service;
 import dev.diakon.diakonpay.dto.analytics.AnalyticsByCategoryResponseDto;
 import dev.diakon.diakonpay.dto.analytics.AnalyticsTotalBalanceResponseDto;
 import dev.diakon.diakonpay.dto.analytics.AnalyticsTotalsResponseDto;
+import dev.diakon.diakonpay.entity.Account;
 import dev.diakon.diakonpay.entity.Transaction;
 import dev.diakon.diakonpay.repository.AccountRepository;
 import dev.diakon.diakonpay.repository.TransactionRepository;
@@ -75,7 +76,7 @@ public class AnalyticsService {
 
     public AnalyticsTotalBalanceResponseDto getTotalBalance(Integer userId) {
         BigDecimal totalBalance = accountRepository.findAllByUserIdAndIsDeletedFalse(userId).stream()
-                .map(acc -> acc.getBalance())
+                .map(Account::getBalance)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return new AnalyticsTotalBalanceResponseDto(totalBalance, "RUB");

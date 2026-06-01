@@ -63,6 +63,7 @@ public class TransactionService {
                                                         OffsetDateTime endDate,
                                                         String type,
                                                         UUID categoryId) {
+
         return transactionRepository.findAllByAccountUserIdAndTransactionsDateBetween(userId, startDate, endDate).stream()
                 .filter(tx -> type == null || tx.getCategory().getType().equals(type))
                 .filter(tx -> categoryId == null || tx.getCategory().getId().equals(categoryId))

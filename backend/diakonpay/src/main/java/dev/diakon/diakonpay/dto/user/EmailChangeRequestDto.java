@@ -1,3 +1,3 @@
 package dev.diakon.diakonpay.dto.user;
 
-public record EmailChangeRequestDto(Integer userId, String newEmail) {}
+public record EmailChangeRequestDto(String newEmail, int code) {}

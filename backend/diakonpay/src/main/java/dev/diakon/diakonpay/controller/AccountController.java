@@ -6,6 +6,7 @@ import dev.diakon.diakonpay.service.AccountService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,13 +20,13 @@ public class AccountController {
     private final AccountService accountService;
 
     @GetMapping
-    public ResponseEntity<@NonNull List<AccountResponseDto>> getAccounts(@RequestParam Integer userId) {
+    public ResponseEntity<@NonNull List<AccountResponseDto>> getAccounts(@AuthenticationPrincipal Integer userId) {
         return ResponseEntity.ok(accountService.getUserAccounts(userId));
     }
 
     @PostMapping
     public ResponseEntity<@NonNull Map<String, String>> createAccount(
-            @RequestParam Integer userId,
+            @AuthenticationPrincipal Integer userId,
             @RequestBody AccountRequestDto request) {
         accountService.createAccount(userId, request);
         return ResponseEntity.ok(Map.of("message", "Счет успешно создан"));
@@ -33,7 +34,7 @@ public class AccountController {
 
     @PutMapping("/{id}")
     public ResponseEntity<@NonNull Map<String, String>> updateAccount(
-            @RequestParam Integer userId,
+            @AuthenticationPrincipal Integer userId,
             @PathVariable UUID id,
             @RequestBody AccountRequestDto request) {
         accountService.updateAccount(userId, id, request);
@@ -42,7 +43,7 @@ public class AccountController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<@NonNull Map<String, String>> deleteAccount(
-            @RequestParam Integer userId,
+            @AuthenticationPrincipal Integer userId,
             @PathVariable UUID id) {
         accountService.deleteAccount(userId, id);
         return ResponseEntity.ok(Map.of("message", "Счет отправлен в архив, история транзакций сохранена"));

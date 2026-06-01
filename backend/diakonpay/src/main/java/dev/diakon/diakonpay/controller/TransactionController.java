@@ -7,6 +7,7 @@ import dev.diakon.diakonpay.service.TransactionService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -23,7 +24,7 @@ public class TransactionController {
 
     @GetMapping
     public ResponseEntity<@NonNull List<TransactionResponseDto>> getTransactions(
-            @RequestParam Integer userId,
+            @AuthenticationPrincipal Integer userId,
             @RequestParam OffsetDateTime startDate,
             @RequestParam OffsetDateTime endDate,
             @RequestParam(required = false) String type,
@@ -33,7 +34,7 @@ public class TransactionController {
 
     @PostMapping
     public ResponseEntity<@NonNull Map<String, Object>> createTransaction(
-            @RequestParam Integer userId,
+            @AuthenticationPrincipal Integer userId,
             @RequestBody TransactionRequestDto request) {
         BigDecimal newBalance = transactionService.createTransaction(userId, request);
         return ResponseEntity.ok(Map.of(
@@ -45,7 +46,7 @@ public class TransactionController {
 
     @PutMapping("/{id}")
     public ResponseEntity<@NonNull Map<String, Object>> updateTransaction(
-            @RequestParam Integer userId,
+            @AuthenticationPrincipal Integer userId,
             @PathVariable UUID id,
             @RequestBody TransactionRequestDto request) {
         BigDecimal newBalance = transactionService.updateTransaction(userId, id, request);
@@ -57,7 +58,7 @@ public class TransactionController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<@NonNull Map<String, Object>> deleteTransaction(
-            @RequestParam Integer userId,
+            @AuthenticationPrincipal Integer userId,
             @PathVariable UUID id) {
         BigDecimal newBalance = transactionService.deleteTransaction(userId, id);
         return ResponseEntity.ok(Map.of(
@@ -69,7 +70,7 @@ public class TransactionController {
 
     @PostMapping("/sync")
     public ResponseEntity<@NonNull TransactionSyncResponseDto> syncTransactions(
-            @RequestParam Integer userId,
+            @AuthenticationPrincipal Integer userId,
             @RequestBody List<TransactionRequestDto> requests) {
         return ResponseEntity.ok(transactionService.syncTransactions(userId, requests));
     }

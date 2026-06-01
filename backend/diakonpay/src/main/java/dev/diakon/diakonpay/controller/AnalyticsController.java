@@ -7,6 +7,7 @@ import dev.diakon.diakonpay.service.AnalyticsService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,21 +20,21 @@ public class AnalyticsController {
 
     @GetMapping("/totals")
     public ResponseEntity<@NonNull AnalyticsTotalsResponseDto> getTotals(
-            @RequestParam Integer userId,
+            @AuthenticationPrincipal Integer userId,
             @RequestParam String period) {
         return ResponseEntity.ok(analyticsService.getTotals(userId, period));
     }
 
     @GetMapping("/by-category")
     public ResponseEntity<@NonNull List<AnalyticsByCategoryResponseDto>> getByCategory(
-            @RequestParam Integer userId,
+            @AuthenticationPrincipal Integer userId,
             @RequestParam String period) {
         return ResponseEntity.ok(analyticsService.getByCategory(userId, period));
     }
 
     @GetMapping("/total-balance")
     public ResponseEntity<@NonNull AnalyticsTotalBalanceResponseDto> getTotalBalance(
-            @RequestParam Integer userId) {
+            @AuthenticationPrincipal Integer userId) {
         return ResponseEntity.ok(analyticsService.getTotalBalance(userId));
     }
 }

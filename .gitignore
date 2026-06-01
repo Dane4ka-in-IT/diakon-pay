@@ -38,3 +38,4 @@ Thumbs.db
 
 
 backend/psql_data/
+backend/tarantool_data/
