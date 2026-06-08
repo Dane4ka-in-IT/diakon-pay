@@ -1,0 +1,84 @@
+services:
+
+  # ── PostgreSQL ────────────────────────────────────────────────
+  db:
+    image: postgres:15-alpine
+    container_name: budget_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: budget_db
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "6667:5432"
+    volumes:
+      - ./backend/psql_data:/var/lib/postgresql/data
+      - ./backend/sql:/docker-entrypoint-initdb.d
+    healthcheck:
+      # POSTGRES_USER is set by the image itself, safe to reference here
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  # ── Tarantool (token + OTP store) ─────────────────────────────
+  tarantool:
+    image: tarantool/tarantool:2.11
+    container_name: budget_tarantool
+    restart: unless-stopped
+    command: tarantool /opt/tarantool/init.lua
+    volumes:
+      - ./backend/tarantool_init/init.lua:/opt/tarantool/init.lua:ro
+    healthcheck:
+      # Spawn a throwaway tarantool process that TCP-connects to 3301
+      test: ["CMD-SHELL", "tarantool -e \"if require('socket').tcp_connect('127.0.0.1',3301) then os.exit(0) end; os.exit(1)\""]
+      interval: 5s
+      timeout: 4s
+      retries: 15
+      start_period: 15s
+
+  # ── Spring Boot API ───────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+    container_name: budget_api
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL:      jdbc:postgresql://db:5432/budget_db
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      TARANTOOL_HOST:             tarantool
+      TARANTOOL_PORT:             3301
+      TARANTOOL_USER:             admin
+      TARANTOOL_PASSWORD:         ${TARANTOOL_PASSWORD:-tarantool_secret}
+      JWT_SECRET:                 ${JWT_SECRET}
+      MAIL_USERNAME:              ${MAIL_USERNAME}
+      MAIL_PASSWORD:              ${MAIL_PASSWORD}
+      MAIL_REPLY:                 ${MAIL_REPLY}
+    depends_on:
+      db:
+        condition: service_healthy
+      tarantool:
+        condition: service_healthy
+    ports:
+      - "1001:8080"
+    healthcheck:
+      # wget is available via busybox on alpine; hits the public Swagger endpoint
+      test: ["CMD-SHELL", "wget -qO /dev/null http://localhost:8080/v3/api-docs || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+
+  # ── Vue PWA (nginx) ───────────────────────────────────────────
+  frontend:
+    build:
+      context: ./diakon_pay_front
+    container_name: budget_frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "80:80"

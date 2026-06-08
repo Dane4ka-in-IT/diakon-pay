@@ -1,0 +1,24 @@
+{
+  "name": "DiakonPay",
+  "short_name": "DiakonPay",
+  "description": "Личный финансовый трекер с офлайн-режимом",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0c1220",
+  "theme_color": "#0C76F7",
+  "lang": "ru",
+  "icons": [
+    {
+      "src": "/111.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/111.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

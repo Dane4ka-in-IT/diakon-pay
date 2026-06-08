@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ежемесячный отчёт — DiakonPay</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 30px auto; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #1abc9c, #16a085); padding: 30px; text-align: center; color: #fff; font-size: 22px; font-weight: bold; }
+        .body { padding: 30px; font-size: 16px; line-height: 1.7; }
+        .stats { display: flex; gap: 16px; margin: 24px 0; }
+        .stat-box { flex: 1; background: #f0fdf9; border-radius: 8px; padding: 20px; text-align: center; border: 1px solid #d1fae5; }
+        .stat-value { font-size: 28px; font-weight: bold; color: #1abc9c; }
+        .stat-label { font-size: 13px; color: #666; margin-top: 4px; }
+        .footer { text-align: center; padding: 20px; font-size: 12px; color: #aaa; background: #fafafa; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">DiakonPay — Отчёт за <span th:text="${month}">Месяц</span></div>
+    <div class="body">
+        <p>Здравствуйте, <b th:text="${userName}">Пользователь</b>!</p>
+        <p>Вот краткий отчёт по вашим финансам за <b th:text="${month}">этот месяц</b>:</p>
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-value" th:text="${#numbers.formatDecimal(totalSpent, 1, 'COMMA', 2, 'POINT')}">0.00</div>
+                <div class="stat-label">Потрачено (₽)</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" th:text="${transactionsCount}">0</div>
+                <div class="stat-label">Транзакций</div>
+            </div>
+        </div>
+        <p>Следите за статистикой в приложении DiakonPay на <a href="https://github.com/Dane4ka-in-IT/diakon-pay">GitHub</a>.</p>
+    </div>
+    <div class="footer">С уважением, команда diakon-team!</div>
+</div>
+</body>
+</html>
